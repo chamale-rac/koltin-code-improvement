@@ -131,44 +131,14 @@ data class ItemData(
 )
 // -----------------------
 
-fun processList(inputList: List<Any?>?): List<ItemData>? {
-    if (inputList != null) {
-        var resultList :  ArrayList<ItemData> = ArrayList<ItemData>()
-        for ((index, element) in inputList.withIndex()) {
-            if(element != null) {
-                var thisType: String? = null
-                var thisInfo: String? = null
-                when(element) {
-                    is String -> {
-                        thisType = "cadena"
-                        thisInfo = "L" + element.length
-                    }
-                    is Int -> {
-                        thisType = "entero"
-                        thisInfo = intInfo(listOf(10,5,2), element)
-                    }
-                    is Boolean -> {
-                        thisType = "booleano"
-                        thisInfo = if(element) "Verdadero" else "Falso"
-                    }
-                }
-                val newItem = ItemData(
-                    originalPos = index,
-                    originalValue = element,
-                    type = thisType,
-                    info = thisInfo
-                )
-                resultList.add(newItem);
-            }
 
-        }
-        return resultList
-    } else {
-        return null
+    fun processList(inputList: List<Any?>?): List<ItemData>? {
+        return inputList?.mapIndexed { idx, value ->  value?.let { ItemData(
+            idx, value, type = if (value is String) "cadena" else if (value is Int) "entero" else if (value is Boolean) "booleano" else null,
+            info = when(value) {
+                is String -> "L" + value.length
+                is Int ->  listOf(10,5,2).firstOrNull { value % it == 0 }?.let { "M$it" }
+                is Boolean -> if(value) "Verdadero" else "Falso"
+                else -> null }
+        )}}?.filterNotNull()
     }
-}
-
-fun intInfo(numbers: List<Int>, element: Int): String? {
-    for (number in numbers) if (element % number == 0) return "M$number"
-    return null
-}
