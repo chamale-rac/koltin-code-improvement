@@ -132,13 +132,23 @@ data class ItemData(
 // -----------------------
 
 
-    fun processList(inputList: List<Any?>?): List<ItemData>? {
-        return inputList?.mapIndexed { idx, value ->  value?.let { ItemData(
-            idx, value, type = if (value is String) "cadena" else if (value is Int) "entero" else if (value is Boolean) "booleano" else null,
-            info = when(value) {
-                is String -> "L" + value.length
-                is Int ->  listOf(10,5,2).firstOrNull { value % it == 0 }?.let { "M$it" }
-                is Boolean -> if(value) "Verdadero" else "Falso"
-                else -> null }
-        )}}?.filterNotNull()
+    fun processList (inputList : List<Any?>?): List<ItemData>? {
+        return inputList?.mapIndexed { idx, value -> value?.let {
+            ItemData (
+                idx,
+                value,
+                when (value) {
+                    is String -> "cadena"
+                    is Int -> "entero"
+                    is Boolean -> "booleano"
+                    else -> null
+                },
+                when(value) {
+                    is String -> "L${value.length}"
+                    is Int ->  listOf(10,5,2).firstOrNull { value % it == 0 }?.let { "M$it" }
+                    is Boolean -> if (value) "Verdadero" else "Falso"
+                    else -> null
+                }
+            )
+        }}?.filterNotNull()
     }
